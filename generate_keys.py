@@ -76,7 +76,11 @@ def get_key(keyId):
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx and 5xx)
-        return response.json()  # Return JSON response
+        response_data = response.json()
+        if isinstance(response_data, list) and len(response_data) > 0:
+            return response_data[0]  # Return the first dictionary in the list
+        else:
+            return {"error": "Empty or invalid response format"}
     except requests.exceptions.RequestException as e:
         return {"error": str(e)}
 
@@ -107,9 +111,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     generate_keys(count)
-    keys = get_key('2f6af3a3-4bfb-4b3c-8f2b-994bdd6fc547')
-    # df = pd.DataFrame(keys)
-    # pd.set_option('display.max_columns', None)
-    print(keys)
-    # print(df)
 
